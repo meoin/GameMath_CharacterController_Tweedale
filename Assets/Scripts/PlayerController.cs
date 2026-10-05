@@ -21,6 +21,7 @@ public class PlayerController : MonoBehaviour
 
     [Header("Vertical Movement")]
     [SerializeField] private float gravity = 10; // units per second
+    [SerializeField] private float maxFallSpeed = 50;
     [SerializeField] private float jumpStrength = 50;
     [SerializeField] private float groundCheckRadius = 0.2f;
     [SerializeField] private LayerMask groundLayer;
@@ -50,6 +51,9 @@ public class PlayerController : MonoBehaviour
         // apply gravity if player isn't grounded
         if (grounded) verticalVelocity = Mathf.Max(0f, verticalVelocity);
         else verticalVelocity -= gravity * delta;
+
+        // Prevent falling velocity from going beyond the max fall speed
+        verticalVelocity = Mathf.Max(verticalVelocity, -maxFallSpeed);
 
         // change position based on the current velocity
         Vector3 position = transform.position;
@@ -160,7 +164,7 @@ public class PlayerController : MonoBehaviour
 
             if (isOverlapping)
             {
-                Vector3 separationVector = pushDirection * (pushDistance + 0.1f);
+                Vector3 separationVector = pushDirection * (pushDistance + 5f);
                 transform.position += separationVector;
 
                 position += separationVector;
