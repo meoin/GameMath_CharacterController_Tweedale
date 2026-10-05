@@ -7,7 +7,7 @@ public class PlayerController : MonoBehaviour
 {
     [Header("Collision Checks")]
     public Transform GroundCheck;
-    public Transform SinkCheck;
+    public Transform[] SinkChecks;
     public Transform NextPositionCheck;
     private Vector2 inputVector = Vector2.zero;
     private Vector2 horizontalVelocity = Vector2.zero;
@@ -69,7 +69,8 @@ public class PlayerController : MonoBehaviour
 
         // sometimes the player can fall through the floor if the delta time is too big when falling
         // this function basically checks if they're sunk into the floor and pushes them back on top of it every frame
-        if (Physics.CheckSphere(SinkCheck.position, groundCheckRadius, groundLayer)) FixFloorSinking();
+        foreach(Transform SinkCheck in SinkChecks)
+            if (Physics.CheckSphere(SinkCheck.position, groundCheckRadius, groundLayer)) FixFloorSinking(SinkCheck);
 
         // show magnitude for debug purposes
         magnitude = velocity.magnitude;
@@ -94,11 +95,11 @@ public class PlayerController : MonoBehaviour
     }
 
     // This method is called if the player is detected to be inside of an object and just puts them on top of it if so
-    private void FixFloorSinking() 
+    private void FixFloorSinking(Transform SinkCheck) 
     {
         Debug.Log("Fixing floor sinking");
 
-        Collider[] hitColliders = Physics.OverlapSphere(GroundCheck.position, groundCheckRadius, groundLayer);
+        Collider[] hitColliders = Physics.OverlapSphere(SinkCheck.position, groundCheckRadius, groundLayer);
 
         Collider groundCollider = hitColliders[0];
 
@@ -174,7 +175,7 @@ public class PlayerController : MonoBehaviour
         return position;
     }
 
-    private void OnDrawGizmosSelected()
+    private void OnDrawGizmos()
     {
         if (GroundCheck != null)
         {
@@ -182,10 +183,13 @@ public class PlayerController : MonoBehaviour
             Gizmos.DrawWireSphere(GroundCheck.position, groundCheckRadius);
         }
 
-        if (SinkCheck != null)
+        if (SinkChecks.Length >= 0)
         {
             Gizmos.color = Color.yellow;
-            Gizmos.DrawSphere(SinkCheck.position, groundCheckRadius);
+            foreach (Transform SinkCheck in SinkChecks) 
+            {
+                Gizmos.DrawSphere(SinkCheck.position, groundCheckRadius);
+            }
         }
 
         if (NextPositionCheck != null)
