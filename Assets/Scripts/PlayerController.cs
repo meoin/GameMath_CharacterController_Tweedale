@@ -1,4 +1,3 @@
-using Unity.VisualScripting.ReorderableList;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UIElements;
@@ -61,7 +60,7 @@ public class PlayerController : MonoBehaviour
 
         // fancy little methods used to stop the player from going into walls
         velocity = WallDetection(position, velocity, delta);
-        FixWallSticking(position);
+        position = FixWallSticking(position);
 
         // after checking that the player won't go into a wall / isn't already in a wall, move the player according to the velocity
         position += velocity * delta;
@@ -165,7 +164,7 @@ public class PlayerController : MonoBehaviour
 
             if (isOverlapping)
             {
-                Vector3 separationVector = pushDirection * (pushDistance + 5f);
+                Vector3 separationVector = pushDirection * (pushDistance + 0.1f);
                 transform.position += separationVector;
 
                 position += separationVector;
